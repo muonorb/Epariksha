@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block content %}
+<h3>Add Questions to {{ exam.name }}</h3>
+<form method="post" class="mb-3">
+    {% csrf_token %}
+    <input type="text" name="text" placeholder="Question" class="form-control mb-2" required>
+    <textarea name="model_answer" placeholder="Model Answer" class="form-control mb-2" required></textarea>
+    <input type="number" name="marks" placeholder="Marks" class="form-control mb-2" required>
+    <button class="btn btn-success">Add Question</button>
+</form>
+
+<h4>Existing Questions:</h4>
+<ul>
+{% for q in questions %}
+    <li>{{ q.text }} - {{ q.marks }} marks</li>
+{% empty %}
+    <li>No questions yet.</li>
+{% endfor %}
+</ul>
+<a href="{% url 'launch_exam' exam.id %}" class="btn btn-primary">Launch Exam</a>
+{% endblock %}
