@@ -187,10 +187,6 @@ def evaluate_submission(request, submission_id):
             student_text_combined = ""
             case_type = "empty"
 
-        # Word & line counts (for both descriptive + code)
-        # word_count = len(student_text_combined.split())
-        # line_count = len(student_text_combined.splitlines())
-
         # Tokenize student and model answers to word sets (case insensitive)
         model_words = set(model_text.lower().split())
         student_words = student_text_combined.lower().split()
@@ -249,31 +245,55 @@ def evaluate_submission(request, submission_id):
         # Code execution 
         code_result = ''
         code_error = ''
+        
         if student_code:
             try:
-                with tempfile.NamedTemporaryFile(suffix='.c', delete=True) as source_file:
+                # Create a temporary C file
+                with tempfile.NamedTemporaryFile(suffix=".c", delete=False) as source_file:
                     source_file.write(student_code.encode())
                     source_file.flush()
-
-                    compile_proc = subprocess.run(
-                        ['gcc', source_file.name, '-o', '/tmp/a.out'],
+                    c_path = source_file.name
+        
+                # Output executable file (.exe)
+                exe_path = c_path.replace(".c", ".exe")
+        
+                # ---- Compile the C program ----
+                compile_proc = subprocess.run(
+                    ["gcc", c_path, "-o", exe_path],
+                    capture_output=True,
+                    text=True,
+                    timeout=7,
+                    shell=True    
+                )
+        
+                if compile_proc.returncode != 0:
+                    code_error = compile_proc.stderr
+        
+                else:
+                    run_proc = subprocess.run(
+                        [exe_path],
                         capture_output=True,
                         text=True,
-                        timeout=5
+                        timeout=5,
+                        shell=True   
                     )
-                    if compile_proc.returncode != 0:
-                        code_error = compile_proc.stderr
-                    else:
-                        run_proc = subprocess.run(
-                            ['/tmp/a.out'],
-                            capture_output=True,
-                            text=True,
-                            timeout=5
-                        )
-                        code_result = run_proc.stdout
-                        code_error += run_proc.stderr
+        
+                    code_result = run_proc.stdout
+                    code_error = run_proc.stderr
+        
             except Exception as e:
                 code_error = str(e)
+        
+            finally:
+                try:
+                    os.remove(c_path)
+                except:
+                    pass
+                try:
+                    os.remove(exe_path)
+                except:
+                    pass
+
 
         # BERT similarity scoring 
         bert_start_time = time.perf_counter()
