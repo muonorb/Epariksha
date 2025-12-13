@@ -1,9 +1,0 @@
-{% extends 'base.html' %}
-{% block content %}
-<h3>Create Exam in {{ classroom.name }}</h3>
-<form method="post">
-    {% csrf_token %}
-    <input type="text" name="name" placeholder="Exam Name" class="form-control mb-2" required>
-    <button class="btn btn-success">Create</button>
-</form>
-{% endblock %}
