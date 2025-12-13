@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% block content %}
+<h3>Submissions for {{ exam.name }}</h3>
+
+<ul>
+{% for submission in submissions %}
+    <li>
+        {{ submission.student.username }}
+        {% if submission.submitted %}
+            <a href="{% url 'evaluate_submission' submission.id %}" class="btn btn-sm btn-primary">Evaluate</a>
+            <td>
+            <strong>Total Marks:</strong>{{ submission.total_marks }} / {{ total_max_marks }}
+            {% comment %} <strong>| Teacher Time:</strong>{{ submission.evaluation_time_formatted }} {% endcomment %}
+            {% comment %} <strong>| BERT Time:</strong>{{ submission.bert_time_formatted }}<br> {% endcomment %}
+            </td>
+
+        {% else %}
+            Not submitted yet
+        {% endif %}
+    </li>
+{% empty %}
+    <li>No submissions yet.</li>
+{% endfor %}
+</ul>
+{% endblock %}
+
+
+

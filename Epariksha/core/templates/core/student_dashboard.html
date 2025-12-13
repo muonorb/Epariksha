@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% block title %}Student Dashboard{% endblock %}
+{% block content %}
+<h2>Student Dashboard</h2>
+<a class="btn btn-primary mb-3" href="{% url 'search_classrooms' %}">Search Classroom</a>
+
+{% for submission in submissions %}
+<div class="card mb-3">
+  <div class="card-body">
+    <h4>{{ submission.exam.classroom.name }} - {{ submission.exam.name }}</h4>
+    {% if submission.status == 'awaiting_evaluation' %}
+        <p>Status: Awaiting Evaluation</p>
+    {% elif submission.status == 'evaluated' %}
+        <a href="{% url 'view_result' submission.id %}" class="btn btn-info">View Result</a>
+    {% elif submission.status == 'not_started' %}
+        {% if submission.exam.launched %}
+            <a href="{% url 'take_exam' submission.exam.id %}" class="btn btn-success">Take Exam</a>
+        {% else %}
+            <p>Exam not yet launched</p>
+        {% endif %}
+    {% endif %}
+  </div>
+</div>
+{% endfor %}
+{% endblock content %}
