@@ -250,33 +250,33 @@ def evaluate_submission(request, submission_id):
 
 
         # Code execution MAC
-        code_result = ''
-        code_error = ''
-        if student_code:
-            try:
-                with tempfile.NamedTemporaryFile(suffix='.c', delete=True) as source_file:
-                    source_file.write(student_code.encode())
-                    source_file.flush()
+        # code_result = ''
+        # code_error = ''
+        # if student_code:
+        #     try:
+        #         with tempfile.NamedTemporaryFile(suffix='.c', delete=True) as source_file:
+        #             source_file.write(student_code.encode())
+        #             source_file.flush()
 
-                    compile_proc = subprocess.run(
-                        ['gcc', source_file.name, '-o', '/tmp/a.out'],
-                        capture_output=True,
-                        text=True,
-                        timeout=5
-                    )
-                    if compile_proc.returncode != 0:
-                        code_error = compile_proc.stderr
-                    else:
-                        run_proc = subprocess.run(
-                            ['/tmp/a.out'],
-                            capture_output=True,
-                            text=True,
-                            timeout=5
-                        )
-                        code_result = run_proc.stdout
-                        code_error += run_proc.stderr
-            except Exception as e:
-                code_error = str(e)
+        #             compile_proc = subprocess.run(
+        #                 ['gcc', source_file.name, '-o', '/tmp/a.out'],
+        #                 capture_output=True,
+        #                 text=True,
+        #                 timeout=5
+        #             )
+        #             if compile_proc.returncode != 0:
+        #                 code_error = compile_proc.stderr
+        #             else:
+        #                 run_proc = subprocess.run(
+        #                     ['/tmp/a.out'],
+        #                     capture_output=True,
+        #                     text=True,
+        #                     timeout=5
+        #                 )
+        #                 code_result = run_proc.stdout
+        #                 code_error += run_proc.stderr
+        #     except Exception as e:
+        #         code_error = str(e)
 
         
         # Code execution Windows
